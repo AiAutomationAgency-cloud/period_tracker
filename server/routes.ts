@@ -6,7 +6,7 @@ import {
   insertMoodSchema, insertNutritionSchema, insertWellnessSchema,
   insertPregnancyMilestoneSchema, insertReminderSchema
 } from "@shared/schema";
-import { generateHealthInsights, answerHealthQuestion } from "./services/gemini";
+import { generateHealthInsights, answerHealthQuestion, generateHealthAssessment } from "./services/gemini";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Mock user ID for development (in production, use proper authentication)
@@ -299,6 +299,59 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({ answer });
     } catch (error) {
       res.status(500).json({ message: "Failed to get AI response" });
+    }
+  });
+
+  app.get("/api/ai/health-assessment", async (req, res) => {
+    try {
+      // Check if we have a recent assessment in storage
+      const existingAssessment = await storage.getAiInsightsByUserId(MOCK_USER_ID, "health_assessment");
+      
+      // If we have a recent assessment (within 24 hours), return it
+      if (existingAssessment.length > 0) {
+        const latest = existingAssessment[0];
+        const assessmentDate = new Date(latest.createdAt!);
+        const now = new Date();
+        const hoursDiff = (now.getTime() - assessmentDate.getTime()) / (1000 * 60 * 60);
+        
+        if (hoursDiff < 24) {
+          res.json(JSON.parse(latest.content));
+          return;
+        }
+      }
+
+      res.json(null);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to get health assessment" });
+    }
+  });
+
+  app.post("/api/ai/generate-assessment", async (req, res) => {
+    try {
+      // Get user data for assessment
+      const cycles = await storage.getCyclesByUserId(MOCK_USER_ID);
+      const symptoms = await storage.getSymptomsByUserId(MOCK_USER_ID);
+      const moods = await storage.getMoodsByUserId(MOCK_USER_ID);
+      const wellness = await storage.getWellnessByUserId(MOCK_USER_ID);
+
+      const assessment = await generateHealthAssessment({
+        cycles,
+        symptoms,
+        moods,
+        wellness
+      });
+
+      // Store the assessment
+      await storage.createAiInsight({
+        userId: MOCK_USER_ID,
+        type: "health_assessment",
+        content: JSON.stringify(assessment),
+        metadata: { generatedAt: new Date().toISOString() }
+      });
+
+      res.json(assessment);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to generate health assessment" });
     }
   });
 
