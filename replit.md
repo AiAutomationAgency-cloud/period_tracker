@@ -4,6 +4,14 @@
 
 LifeCycle AI is a comprehensive women's health tracking application that combines cycle monitoring, pregnancy tracking, wellness management, and AI-powered health insights. The application provides personalized health recommendations and allows users to track various aspects of their reproductive and general health through an intuitive web interface.
 
+## Recent Changes (August 2025)
+
+- **Migration Completed**: Successfully migrated from Replit Agent to standard Replit environment
+- **React Hooks Fixed**: Resolved critical React useState hook error in use-theme.tsx
+- **Enhanced Components**: Created comprehensive AI chat, wellness forms with charts, and pregnancy tracking
+- **UI Improvements**: Added interactive wellness charts, enhanced pregnancy progress tracking, and improved dashboard
+- **Feature Complete**: All major functionalities now working including cycle tracking, AI insights, wellness monitoring, and pregnancy journey tracking
+
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
