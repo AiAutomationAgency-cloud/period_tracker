@@ -1,6 +1,6 @@
 import { AIChat } from "@/components/ai/AIChat";
 import { PersonalizedInsights } from "@/components/ai/PersonalizedInsights";
-import { AIHealthAssessment } from "@/components/ai/AIHealthAssessment";
+import { AIHealthAssessmentSimple } from "@/components/ai/AIHealthAssessmentSimple";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -129,7 +129,7 @@ export default function AIAssistant() {
         </TabsContent>
 
         <TabsContent value="assessment">
-          <AIHealthAssessment />
+          <AIHealthAssessmentSimple />
         </TabsContent>
       </Tabs>
     </div>
