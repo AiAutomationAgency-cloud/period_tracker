@@ -1,7 +1,7 @@
-import React, { useEffect } from "react";
+import { useEffect, ReactNode } from "react";
 
 interface ThemeProviderProps {
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
 export function ThemeProvider({ children }: ThemeProviderProps) {
