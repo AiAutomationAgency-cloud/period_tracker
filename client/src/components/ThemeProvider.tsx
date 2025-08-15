@@ -1,11 +1,11 @@
-import React, { useEffect } from "react";
+import * as React from "react";
 
 interface ThemeProviderProps {
   children: React.ReactNode;
 }
 
 export function ThemeProvider({ children }: ThemeProviderProps) {
-  useEffect(() => {
+  React.useEffect(() => {
     // Initialize theme on mount
     const storedTheme = localStorage.getItem("lifecycle-ui-theme") || "light";
     const root = window.document.documentElement;

@@ -1,0 +1,118 @@
+Got it — this **"Invalid hook call"** error in React basically means React’s `useEffect` (or any hook) is being used in a place where React doesn’t expect it.
+
+---
+
+## **Flow of What’s Happening**
+
+1. React hooks (`useEffect`, `useState`, etc.) **must** be called:
+
+   * Inside the **body** of a React **function component**
+   * Or inside a **custom hook** (which itself is called from a function component)
+2. Your error says:
+
+   ```
+   Cannot read properties of null (reading 'useEffect')
+   ```
+
+   → This often happens when **React is not properly initialized** because:
+
+   * There are **two copies of React** in your app
+   * Mismatched versions of `react` and `react-dom`
+   * Importing hooks from the **wrong React instance** (like from a dependency that bundles its own React)
+   * Calling hooks **outside** a component function
+
+---
+
+## **Possible Causes**
+
+### 1️⃣ **Two React versions installed**
+
+Run:
+
+```bash
+npm ls react
+```
+
+If you see multiple versions → you need to ensure only **one** version is in `node_modules`.
+
+**Fix:**
+
+```bash
+npm install react@latest react-dom@latest
+```
+
+and remove `node_modules` + reinstall:
+
+```bash
+rm -rf node_modules package-lock.json
+npm install
+```
+
+---
+
+### 2️⃣ **Mismatch between `react` and `react-dom`**
+
+Check `package.json` — both should have **the same major version**:
+
+```json
+"react": "18.2.0",
+"react-dom": "18.2.0"
+```
+
+---
+
+### 3️⃣ **Hook used outside a function component**
+
+❌ Wrong:
+
+```js
+useEffect(() => {
+  console.log("Hello");
+}, []);
+```
+
+(You can’t put this at the top level of a file.)
+
+✅ Correct:
+
+```jsx
+function MyComponent() {
+  useEffect(() => {
+    console.log("Hello");
+  }, []);
+  return <div>Hi</div>;
+}
+```
+
+---
+
+### 4️⃣ **ThemeProvider issue**
+
+The stack trace says:
+
+```
+at ThemeProvider (ThemeProvider.tsx:8:3)
+```
+
+If your `ThemeProvider` is a **class component** or a normal function that’s not a React component, you **can’t** use hooks there.
+It must be:
+
+```tsx
+function ThemeProvider({ children }) {
+  useEffect(() => {
+    console.log("Theme loaded");
+  }, []);
+  return <ThemeContext.Provider>{children}</ThemeContext.Provider>;
+}
+```
+
+---
+
+💡 **Intuition:**
+Hooks work because React keeps a special “state list” tied to the currently rendering component.
+If you call them **outside** a render cycle (or in a different React instance), React can’t find that list → you get this error.
+
+---
+
+If you want, I can debug your `ThemeProvider.tsx` line-by-line and tell you exactly why `useEffect` is failing.
+Do you want me to do that?
