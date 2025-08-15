@@ -35,6 +35,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Initialize user on startup
   await initUser();
 
+  // Health check endpoint for deployment
+  app.get("/health", (req, res) => {
+    res.status(200).json({ 
+      status: "healthy", 
+      timestamp: new Date().toISOString(),
+      version: "1.0.0",
+      environment: process.env.NODE_ENV || "development"
+    });
+  });
+
   // Users
   app.get("/api/user/profile", async (req, res) => {
     try {

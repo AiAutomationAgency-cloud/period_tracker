@@ -60,7 +60,7 @@ export default function CycleTracking() {
 
       <div className="grid lg:grid-cols-2 gap-8">
         {/* Calendar View */}
-        <CycleCalendar cycles={cycles} onDateSelect={setSelectedDate} selectedDate={selectedDate} />
+        <CycleCalendar cycles={cycles as any[]} onDateSelect={setSelectedDate} selectedDate={selectedDate} />
 
         {/* Cycle Details */}
         <div className="space-y-6">
