@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useState } from "react";
+import * as React from "react";
 
 interface CycleCalendarProps {
   cycles?: any[];
@@ -9,7 +9,7 @@ interface CycleCalendarProps {
 }
 
 export function CycleCalendar({ cycles, onDateSelect, selectedDate }: CycleCalendarProps) {
-  const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [currentMonth, setCurrentMonth] = React.useState(new Date());
 
   const daysInMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0).getDate();
   const firstDayOfMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1).getDay();

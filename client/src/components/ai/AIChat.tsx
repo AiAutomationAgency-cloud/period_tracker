@@ -1,4 +1,4 @@
-import { useState } from "react";
+import * as React from "react";
 import { useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,7 +14,7 @@ interface ChatMessage {
 }
 
 export function AIChat() {
-  const [messages, setMessages] = useState<ChatMessage[]>([
+  const [messages, setMessages] = React.useState<ChatMessage[]>([
     {
       id: "1",
       role: "assistant",
@@ -22,7 +22,7 @@ export function AIChat() {
       timestamp: new Date(),
     },
   ]);
-  const [input, setInput] = useState("");
+  const [input, setInput] = React.useState("");
 
   const sendMessageMutation = useMutation({
     mutationFn: async (question: string) => {

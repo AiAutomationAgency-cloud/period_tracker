@@ -1,4 +1,4 @@
-import { useState } from "react";
+import * as React from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,12 +9,12 @@ import { Activity, Droplets, Moon, Heart, Clock } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 
 export function WellnessForm() {
-  const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
-  const [steps, setSteps] = useState([8000]);
-  const [waterIntake, setWaterIntake] = useState([2.5]);
-  const [sleepHours, setSleepHours] = useState([7.5]);
-  const [sleepQuality, setSleepQuality] = useState([4]);
-  const [exerciseMinutes, setExerciseMinutes] = useState([30]);
+  const [date, setDate] = React.useState(new Date().toISOString().split('T')[0]);
+  const [steps, setSteps] = React.useState([8000]);
+  const [waterIntake, setWaterIntake] = React.useState([2.5]);
+  const [sleepHours, setSleepHours] = React.useState([7.5]);
+  const [sleepQuality, setSleepQuality] = React.useState([4]);
+  const [exerciseMinutes, setExerciseMinutes] = React.useState([30]);
 
   const queryClient = useQueryClient();
 

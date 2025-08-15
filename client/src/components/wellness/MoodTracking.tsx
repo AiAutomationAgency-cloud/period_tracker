@@ -1,11 +1,11 @@
-import { useState } from "react";
+import * as React from "react";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { apiRequest } from "@/lib/queryClient";
 
 export function MoodTracking() {
-  const [selectedMood, setSelectedMood] = useState<string>("");
-  const [energyLevel, setEnergyLevel] = useState<number>(5);
+  const [selectedMood, setSelectedMood] = React.useState<string>("");
+  const [energyLevel, setEnergyLevel] = React.useState<number>(5);
   const queryClient = useQueryClient();
 
   const { data: todayMood } = useQuery({

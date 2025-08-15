@@ -1,4 +1,4 @@
-import { useState } from "react";
+import * as React from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { CycleCalendar } from "@/components/cycle/CycleCalendar";
@@ -7,7 +7,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 
 export default function CycleTracking() {
-  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+  const [selectedDate, setSelectedDate] = React.useState(new Date().toISOString().split('T')[0]);
   const queryClient = useQueryClient();
 
   const { data: cycles } = useQuery({
