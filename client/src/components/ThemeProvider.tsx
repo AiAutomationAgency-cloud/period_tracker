@@ -1,13 +1,23 @@
-import { ThemeProvider as BaseThemeProvider } from "@/hooks/use-theme";
+import { useEffect } from "react";
 
 interface ThemeProviderProps {
   children: React.ReactNode;
 }
 
 export function ThemeProvider({ children }: ThemeProviderProps) {
-  return (
-    <BaseThemeProvider defaultTheme="light" storageKey="lifecycle-theme">
-      {children}
-    </BaseThemeProvider>
-  );
+  useEffect(() => {
+    // Initialize theme on mount
+    const storedTheme = localStorage.getItem("lifecycle-ui-theme") || "light";
+    const root = window.document.documentElement;
+    root.classList.remove("light", "dark");
+    
+    if (storedTheme === "system") {
+      const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+      root.classList.add(systemTheme);
+    } else {
+      root.classList.add(storedTheme);
+    }
+  }, []);
+
+  return <>{children}</>;
 }
