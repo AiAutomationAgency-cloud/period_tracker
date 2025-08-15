@@ -1,7 +1,7 @@
 import { GoogleGenAI } from "@google/genai";
 
 const ai = new GoogleGenAI({ 
-  apiKey: process.env.GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY || "" 
+  apiKey: process.env.GOOGLE_API_KEY || process.env.GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY || "" 
 });
 
 export interface HealthInsight {
@@ -35,7 +35,7 @@ export async function generateHealthInsights(userData: {
     `;
 
     const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
+      model: "gemini-1.5-flash",
       config: {
         responseMimeType: "application/json",
         responseSchema: {
@@ -45,7 +45,13 @@ export async function generateHealthInsights(userData: {
             properties: {
               type: { type: "string" },
               content: { type: "string" },
-              metadata: { type: "object" }
+              metadata: { 
+                type: "object",
+                properties: {
+                  confidence: { type: "number" },
+                  priority: { type: "string" }
+                }
+              }
             },
             required: ["type", "content"]
           }
@@ -98,7 +104,7 @@ export async function answerHealthQuestion(
     `;
 
     const response = await ai.models.generateContent({
-      model: "gemini-2.5-pro",
+      model: "gemini-1.5-pro",
       config: {
         systemInstruction: systemPrompt,
       },
@@ -133,7 +139,7 @@ export async function analyzeCyclePatterns(cycles: any[]): Promise<{
     `;
 
     const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
+      model: "gemini-1.5-flash",
       config: {
         responseMimeType: "application/json",
         responseSchema: {
