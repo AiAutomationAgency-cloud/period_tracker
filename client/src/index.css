@@ -1,0 +1,142 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: hsl(0 0% 100%);
+  --foreground: hsl(240 10% 3.9%);
+  --card: hsl(0 0% 100%);
+  --card-foreground: hsl(240 10% 3.9%);
+  --popover: hsl(0 0% 100%);
+  --popover-foreground: hsl(240 10% 3.9%);
+  --primary: hsl(262 83% 58%);
+  --primary-foreground: hsl(0 0% 100%);
+  --secondary: hsl(240 4.8% 95.9%);
+  --secondary-foreground: hsl(240 5.9% 10%);
+  --muted: hsl(240 4.8% 95.9%);
+  --muted-foreground: hsl(240 3.8% 46.1%);
+  --accent: hsl(240 4.8% 95.9%);
+  --accent-foreground: hsl(240 5.9% 10%);
+  --destructive: hsl(0 84.2% 60.2%);
+  --destructive-foreground: hsl(0 0% 98%);
+  --border: hsl(240 5.9% 90%);
+  --input: hsl(240 5.9% 90%);
+  --ring: hsl(262 83% 58%);
+  --chart-1: hsl(262 83% 58%);
+  --chart-2: hsl(160 60% 45%);
+  --chart-3: hsl(30 80% 55%);
+  --chart-4: hsl(280 65% 60%);
+  --chart-5: hsl(340 75% 55%);
+  --radius: 0.5rem;
+  
+  /* Custom pastel colors from design */
+  --primary-50: hsl(270 100% 98%);
+  --primary-100: hsl(269 100% 95%);
+  --primary-200: hsl(269 100% 92%);
+  --primary-300: hsl(269 64% 85%);
+  --primary-400: hsl(270 54% 76%);
+  --primary-500: hsl(262 83% 58%);
+  --primary-600: hsl(262 71% 50%);
+  --primary-700: hsl(263 70% 41%);
+  --primary-800: hsl(263 69% 35%);
+  --primary-900: hsl(264 69% 30%);
+  
+  --sage-50: hsl(120 60% 97%);
+  --sage-100: hsl(120 60% 95%);
+  --sage-200: hsl(120 13% 85%);
+  --sage-300: hsl(120 9% 69%);
+  --sage-400: hsl(120 6% 56%);
+  --sage-500: hsl(120 6% 42%);
+  --sage-600: hsl(120 7% 30%);
+  --sage-700: hsl(120 10% 25%);
+  --sage-800: hsl(120 13% 13%);
+  --sage-900: hsl(120 15% 6%);
+  
+  --coral-50: hsl(0 86% 97%);
+  --coral-100: hsl(0 93% 94%);
+  --coral-200: hsl(0 96% 89%);
+  --coral-300: hsl(0 94% 82%);
+  --coral-400: hsl(0 91% 71%);
+  --coral-500: hsl(0 91% 71%);
+  --coral-600: hsl(0 84% 60%);
+  --coral-700: hsl(0 72% 51%);
+  --coral-800: hsl(0 70% 42%);
+  --coral-900: hsl(0 63% 31%);
+  
+  --font-sans: Inter, sans-serif;
+}
+
+.dark {
+  --background: hsl(240 10% 3.9%);
+  --foreground: hsl(0 0% 98%);
+  --card: hsl(240 10% 3.9%);
+  --card-foreground: hsl(0 0% 98%);
+  --popover: hsl(240 10% 3.9%);
+  --popover-foreground: hsl(0 0% 98%);
+  --primary: hsl(262 83% 58%);
+  --primary-foreground: hsl(0 0% 100%);
+  --secondary: hsl(240 3.7% 15.9%);
+  --secondary-foreground: hsl(0 0% 98%);
+  --muted: hsl(240 3.7% 15.9%);
+  --muted-foreground: hsl(240 5% 64.9%);
+  --accent: hsl(240 3.7% 15.9%);
+  --accent-foreground: hsl(0 0% 98%);
+  --destructive: hsl(0 62.8% 30.6%);
+  --destructive-foreground: hsl(0 0% 98%);
+  --border: hsl(240 3.7% 15.9%);
+  --input: hsl(240 3.7% 15.9%);
+  --ring: hsl(262 83% 58%);
+  --chart-1: hsl(262 83% 58%);
+  --chart-2: hsl(160 60% 45%);
+  --chart-3: hsl(30 80% 55%);
+  --chart-4: hsl(280 65% 60%);
+  --chart-5: hsl(340 75% 55%);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+}
+
+@layer utilities {
+  .gradient-bg {
+    background: linear-gradient(135deg, var(--primary-50) 0%, var(--sage-50) 100%);
+  }
+  
+  .dark .gradient-bg {
+    background: linear-gradient(135deg, hsl(240 10% 3.9%) 0%, hsl(240 3.7% 15.9%) 100%);
+  }
+  
+  .glass-effect {
+    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.9);
+  }
+  
+  .dark .glass-effect {
+    background: rgba(45, 55, 72, 0.9);
+  }
+  
+  .progress-ring {
+    transform: rotate(-90deg);
+  }
+  
+  .floating-nav {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 50;
+  }
+  
+  @media (min-width: 768px) {
+    .floating-nav {
+      display: none;
+    }
+  }
+}
