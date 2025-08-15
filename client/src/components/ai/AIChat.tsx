@@ -2,182 +2,181 @@ import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Send, Sparkles } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { Send, User, Bot, Sparkles, Loader2 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 
-interface Message {
+interface ChatMessage {
   id: string;
-  text: string;
-  isUser: boolean;
+  role: "user" | "assistant";
+  content: string;
   timestamp: Date;
 }
 
 export function AIChat() {
-  const [messages, setMessages] = useState<Message[]>([
+  const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: "1",
-      text: "Hello! I'm your AI health assistant. I can help you understand your cycle patterns, provide health tips, and answer questions about women's health. What would you like to know?",
-      isUser: false,
+      role: "assistant",
+      content: "Hi! I'm your AI health assistant. I can help answer questions about your menstrual cycle, pregnancy, wellness, and general health. What would you like to know?",
       timestamp: new Date(),
     },
   ]);
   const [input, setInput] = useState("");
 
-  const chatMutation = useMutation({
+  const sendMessageMutation = useMutation({
     mutationFn: async (question: string) => {
-      const response = await apiRequest("POST", "/api/ai/chat", { question });
-      return response.json();
+      return apiRequest("POST", "/api/ai/chat", { question });
     },
-    onSuccess: (data) => {
-      setMessages(prev => [
-        ...prev,
-        {
-          id: Date.now().toString(),
-          text: data.answer,
-          isUser: false,
-          timestamp: new Date(),
-        }
-      ]);
+    onSuccess: (response: any) => {
+      const assistantMessage: ChatMessage = {
+        id: Date.now().toString() + "-assistant",
+        role: "assistant",
+        content: response.answer || "I'm sorry, I couldn't process your question. Please try again.",
+        timestamp: new Date(),
+      };
+      setMessages(prev => [...prev, assistantMessage]);
     },
     onError: () => {
-      setMessages(prev => [
-        ...prev,
-        {
-          id: Date.now().toString(),
-          text: "I'm sorry, I'm having trouble processing your request right now. Please try again.",
-          isUser: false,
-          timestamp: new Date(),
-        }
-      ]);
+      const errorMessage: ChatMessage = {
+        id: Date.now().toString() + "-error",
+        role: "assistant",
+        content: "I'm sorry, there was an error processing your request. Please make sure you have a valid API key configured.",
+        timestamp: new Date(),
+      };
+      setMessages(prev => [...prev, errorMessage]);
     },
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (input.trim() && !chatMutation.isPending) {
-      const userMessage: Message = {
-        id: Date.now().toString(),
-        text: input.trim(),
-        isUser: true,
-        timestamp: new Date(),
-      };
-      
-      setMessages(prev => [...prev, userMessage]);
-      chatMutation.mutate(input.trim());
-      setInput("");
-    }
+    if (!input.trim()) return;
+
+    const userMessage: ChatMessage = {
+      id: Date.now().toString() + "-user",
+      role: "user",
+      content: input,
+      timestamp: new Date(),
+    };
+
+    setMessages(prev => [...prev, userMessage]);
+    sendMessageMutation.mutate(input);
+    setInput("");
+  };
+
+  const handleQuickQuestion = (question: string) => {
+    const userMessage: ChatMessage = {
+      id: Date.now().toString() + "-user",
+      role: "user",
+      content: question,
+      timestamp: new Date(),
+    };
+
+    setMessages(prev => [...prev, userMessage]);
+    sendMessageMutation.mutate(question);
   };
 
   const quickQuestions = [
-    "I've been feeling more tired than usual lately. Is this normal during my cycle?",
-    "What foods can help with period cramps?",
-    "How can I improve my sleep quality?",
+    "What are the phases of my menstrual cycle?",
+    "How can I reduce period cramps?",
+    "What foods help with PMS symptoms?",
+    "Is spotting between periods normal?",
   ];
 
-  const handleQuickQuestion = (question: string) => {
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      text: question,
-      isUser: true,
-      timestamp: new Date(),
-    };
-    
-    setMessages(prev => [...prev, userMessage]);
-    chatMutation.mutate(question);
-  };
-
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm h-96 flex flex-col">
-      <div className="p-6 border-b border-gray-200 dark:border-gray-700">
-        <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 bg-gradient-to-r from-primary-500 to-sage-500 rounded-xl flex items-center justify-center">
-            <Sparkles className="w-5 h-5 text-white" />
-          </div>
-          <div>
-            <h3 className="font-semibold text-gray-900 dark:text-white">LifeCycle AI Assistant</h3>
-            <p className="text-sm text-gray-500 dark:text-gray-400">Powered by Gemini AI</p>
-          </div>
+    <Card className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm h-[600px] flex flex-col">
+      <div className="flex items-center space-x-3 mb-4">
+        <div className="w-8 h-8 bg-gradient-to-r from-primary-500 to-sage-500 rounded-lg flex items-center justify-center">
+          <Sparkles className="w-4 h-4 text-white" />
+        </div>
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">AI Health Assistant</h3>
+      </div>
+
+      {/* Quick Questions */}
+      <div className="mb-4">
+        <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Try asking:</p>
+        <div className="flex flex-wrap gap-2">
+          {quickQuestions.map((question, index) => (
+            <Button
+              key={index}
+              variant="ghost"
+              size="sm"
+              onClick={() => handleQuickQuestion(question)}
+              className="text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg"
+              data-testid={`quick-question-${index}`}
+            >
+              {question}
+            </Button>
+          ))}
         </div>
       </div>
-      
-      {/* Chat Messages */}
-      <div className="flex-1 p-6 overflow-y-auto space-y-4">
+
+      {/* Messages */}
+      <div className="flex-1 overflow-y-auto space-y-4 mb-4" data-testid="chat-messages">
         {messages.map((message) => (
-          <div key={message.id} className={`flex items-start space-x-3 ${message.isUser ? 'justify-end' : ''}`}>
-            {!message.isUser && (
-              <div className="w-8 h-8 bg-gradient-to-r from-primary-500 to-sage-500 rounded-full flex items-center justify-center flex-shrink-0">
-                <Sparkles className="w-4 h-4 text-white" />
+          <div
+            key={message.id}
+            className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}
+          >
+            <div className={`flex space-x-3 max-w-[80%] ${message.role === "user" ? "flex-row-reverse space-x-reverse" : ""}`}>
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
+                message.role === "user" 
+                  ? "bg-primary-500 text-white" 
+                  : "bg-gray-200 dark:bg-gray-700"
+              }`}>
+                {message.role === "user" ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
               </div>
-            )}
-            <div className={`rounded-lg p-3 max-w-sm ${
-              message.isUser 
-                ? 'bg-primary-500 text-white' 
-                : 'bg-gray-100 dark:bg-gray-700'
-            }`}>
-              <p className={`text-sm ${message.isUser ? 'text-white' : 'text-gray-900 dark:text-white'}`}>
-                {message.text}
-              </p>
+              <div className={`p-3 rounded-lg ${
+                message.role === "user"
+                  ? "bg-primary-500 text-white"
+                  : "bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white"
+              }`}>
+                <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+                <p className={`text-xs mt-1 opacity-70 ${
+                  message.role === "user" ? "text-primary-100" : "text-gray-500 dark:text-gray-400"
+                }`}>
+                  {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                </p>
+              </div>
             </div>
-            {message.isUser && (
-              <div className="w-8 h-8 bg-gradient-to-r from-coral-300 to-primary-300 rounded-full flex items-center justify-center flex-shrink-0">
-                <span className="text-white font-semibold text-sm">A</span>
-              </div>
-            )}
           </div>
         ))}
-        
-        {chatMutation.isPending && (
-          <div className="flex items-start space-x-3">
-            <div className="w-8 h-8 bg-gradient-to-r from-primary-500 to-sage-500 rounded-full flex items-center justify-center flex-shrink-0">
-              <Sparkles className="w-4 h-4 text-white" />
-            </div>
-            <div className="bg-gray-100 dark:bg-gray-700 rounded-lg p-3 max-w-sm">
-              <div className="flex space-x-1">
-                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+        {sendMessageMutation.isPending && (
+          <div className="flex justify-start">
+            <div className="flex space-x-3 max-w-[80%]">
+              <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+                <Bot className="w-4 h-4" />
+              </div>
+              <div className="bg-gray-100 dark:bg-gray-700 p-3 rounded-lg">
+                <div className="flex items-center space-x-2">
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span className="text-sm text-gray-900 dark:text-white">AI is thinking...</span>
+                </div>
               </div>
             </div>
           </div>
         )}
+      </div>
 
-        {messages.length === 1 && (
-          <div className="space-y-2">
-            <p className="text-sm text-gray-500 dark:text-gray-400">Try asking:</p>
-            {quickQuestions.map((question, index) => (
-              <Button
-                key={index}
-                variant="outline"
-                size="sm"
-                onClick={() => handleQuickQuestion(question)}
-                className="text-left text-xs p-2 h-auto whitespace-normal"
-              >
-                {question}
-              </Button>
-            ))}
-          </div>
-        )}
-      </div>
-      
-      {/* Chat Input */}
-      <div className="p-6 border-t border-gray-200 dark:border-gray-700">
-        <form onSubmit={handleSubmit} className="flex space-x-3">
-          <Input
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="Ask me anything about your health..."
-            className="flex-1"
-            disabled={chatMutation.isPending}
-          />
-          <Button 
-            type="submit" 
-            disabled={!input.trim() || chatMutation.isPending}
-            className="bg-primary-500 hover:bg-primary-600 text-white"
-          >
-            <Send className="w-4 h-4" />
-          </Button>
-        </form>
-      </div>
-    </div>
+      {/* Input */}
+      <form onSubmit={handleSubmit} className="flex space-x-2">
+        <Input
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          placeholder="Ask me anything about your health..."
+          className="flex-1"
+          disabled={sendMessageMutation.isPending}
+          data-testid="chat-input"
+        />
+        <Button
+          type="submit"
+          disabled={!input.trim() || sendMessageMutation.isPending}
+          className="bg-primary-500 hover:bg-primary-600 text-white"
+          data-testid="send-button"
+        >
+          <Send className="w-4 h-4" />
+        </Button>
+      </form>
+    </Card>
   );
 }

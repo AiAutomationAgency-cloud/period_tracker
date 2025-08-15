@@ -13,6 +13,7 @@ export interface IStorage {
   getUserByUsername(username: string): Promise<User | undefined>;
   getUserByEmail(email: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
+  createUserWithId(id: string, user: InsertUser): Promise<User>;
   updateUser(id: string, updates: Partial<User>): Promise<User | undefined>;
 
   // Cycles
@@ -83,6 +84,19 @@ export class MemStorage implements IStorage {
 
   async createUser(insertUser: InsertUser): Promise<User> {
     const id = randomUUID();
+    const user: User = { 
+      ...insertUser, 
+      id, 
+      createdAt: new Date(),
+      dateOfBirth: insertUser.dateOfBirth ?? null,
+      isPregnant: insertUser.isPregnant ?? false,
+      pregnancyDueDate: insertUser.pregnancyDueDate ?? null
+    };
+    this.users.set(id, user);
+    return user;
+  }
+
+  async createUserWithId(id: string, insertUser: InsertUser): Promise<User> {
     const user: User = { 
       ...insertUser, 
       id, 

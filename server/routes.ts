@@ -13,10 +13,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   const MOCK_USER_ID = "user-1";
 
   // Create a mock user if it doesn't exist
-  app.use(async (req, res, next) => {
+  const initUser = async () => {
     const existingUser = await storage.getUser(MOCK_USER_ID);
     if (!existingUser) {
-      await storage.createUser({
+      console.log("Creating mock user...");
+      const newUser = await storage.createUserWithId(MOCK_USER_ID, {
         username: "anna",
         email: "anna@example.com",
         password: "password",
@@ -25,9 +26,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         isPregnant: false,
         pregnancyDueDate: null
       });
+      console.log("Mock user created:", newUser);
+    } else {
+      console.log("Mock user already exists");
     }
-    next();
-  });
+  };
+  
+  // Initialize user on startup
+  await initUser();
 
   // Users
   app.get("/api/user/profile", async (req, res) => {

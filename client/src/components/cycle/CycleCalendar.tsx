@@ -97,8 +97,8 @@ export function CycleCalendar({ cycles, onDateSelect, selectedDate }: CycleCalen
       
       {/* Calendar Grid */}
       <div className="grid grid-cols-7 gap-1 mb-4">
-        {["S", "M", "T", "W", "T", "F", "S"].map((day) => (
-          <div key={day} className="text-center text-xs font-medium text-gray-400 p-2">
+        {["S", "M", "T", "W", "T", "F", "S"].map((day, index) => (
+          <div key={`weekday-${index}`} className="text-center text-xs font-medium text-gray-400 p-2">
             {day}
           </div>
         ))}
